@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kit Decisor — Dashboard</title>
+<style>
+  :root {
+    color-scheme: light;
+    --primary: #00AEEF;
+    --primary-dark: #0090C5;
+    --navy: #002742;
+    --navy-mid: #003D6B;
+    --purple: #7B2D8B;
+    --bg: #F0F4F8;
+    --card: #ffffff;
+    --text: #1A2332;
+    --muted: #6B7A8D;
+    --border: #E3E9F0;
+    --success: #10B981;
+    --warning: #F59E0B;
+    --danger: #EF4444;
+    --radius: 12px;
+    --shadow: 0 1px 4px rgba(0,39,66,0.08);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 14px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
+    color: white;
+    padding: 18px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,39,66,0.25);
+  }
+
+  .header-left { display: flex; align-items: center; gap: 14px; }
+
+  .logo {
+    width: 38px; height: 38px;
+    background: var(--primary);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 900; font-size: 17px; color: white;
+    letter-spacing: -1px;
+    flex-shrink: 0;
+  }
+
+  .header-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .header-sub { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+
+  .header-right { display: flex; align-items: center; gap: 12px; }
+
+  #lastUpdated { font-size: 11px; opacity: 0.55; text-align: right; }
+
+  .refresh-btn {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: white;
+    padding: 7px 14px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+    transition: background 0.2s, transform 0.15s;
+    white-space: nowrap;
+  }
+  .refresh-btn:hover { background: rgba(255,255,255,0.18); }
+  .refresh-btn:active { transform: scale(0.97); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .spinning { animation: spin 0.7s linear infinite; }
+
+  /* ── CONTENT ── */
+  .content { padding: 24px 28px 40px; max-width: 1400px; margin: 0 auto; }
+
+  /* ── KPI CARDS ── */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 14px;
+    margin-bottom: 22px;
+  }
+  @media (max-width: 900px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 600px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+  .kpi-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .kpi-card:hover { box-shadow: 0 4px 16px rgba(0,39,66,0.12); transform: translateY(-1px); }
+  .kpi-card::before {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    border-radius: var(--radius) var(--radius) 0 0;
+  }
+  .kpi-blue::before   { background: var(--primary); }
+  .kpi-green::before  { background: var(--success); }
+  .kpi-orange::before { background: var(--warning); }
+  .kpi-purple::before { background: var(--purple); }
+  .kpi-navy::before   { background: var(--navy); }
+
+  .kpi-icon {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 10px; font-size: 15px;
+  }
+  .kpi-blue .kpi-icon   { background: #E0F5FE; }
+  .kpi-green .kpi-icon  { background: #D1FAE5; }
+  .kpi-orange .kpi-icon { background: #FEF3C7; }
+  .kpi-purple .kpi-icon { background: #F3E8FF; }
+  .kpi-navy .kpi-icon   { background: #E6EEF5; }
+
+  .kpi-label {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 4px;
+  }
+  .kpi-value { font-size: 30px; font-weight: 800; color: var(--text); line-height: 1; letter-spacing: -1px; }
+  .kpi-sub { font-size: 11px; color: var(--muted); margin-top: 5px; }
+
+  /* ── PIPELINE ── */
+  .pipeline-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    margin-bottom: 22px;
+  }
+  .pipeline-header {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .pipeline-header span { color: var(--navy); font-size: 13px; }
+  .pipeline-stages { display: flex; }
+  .p-stage {
+    flex: 1; padding: 20px 16px;
+    border-right: 1px solid var(--border);
+    text-align: center;
+  }
+  .p-stage:last-child { border-right: none; }
+  .p-stage-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 10px; font-size: 16px;
+  }
+  .p-stage-label { font-size: 10px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+  .p-stage-count { font-size: 28px; font-weight: 800; color: var(--navy); line-height: 1; }
+  .p-stage-pct { font-size: 11px; color: var(--muted); margin-top: 4px; }
+  .p-bar { height: 4px; border-radius: 2px; background: var(--border); margin-top: 10px; overflow: hidden; }
+  .p-bar-fill { height: 100%; border-radius: 2px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+
+  /* ── TABLE ── */
+  .table-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+  .table-toolbar {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; flex-wrap: wrap;
+  }
+  .table-toolbar-left { display: flex; align-items: center; gap: 10px; }
+  .toolbar-title { font-size: 13px; font-weight: 700; color: var(--navy); }
+  .record-count {
+    background: var(--bg); color: var(--muted);
+    font-size: 11px; font-weight: 600;
+    padding: 3px 9px; border-radius: 20px; border: 1px solid var(--border);
+  }
+  .filter-input {
+    padding: 8px 14px; border: 1px solid var(--border);
+    border-radius: 8px; font-size: 13px; color: var(--text);
+    background: var(--bg); width: 240px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .filter-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,174,239,0.1); }
+
+  .stage-filter { display: flex; gap: 6px; flex-wrap: wrap; }
+  .stage-chip {
+    padding: 4px 12px; border-radius: 20px;
+    font-size: 11px; font-weight: 600; cursor: pointer;
+    border: 1.5px solid var(--border); background: white; color: var(--muted);
+    transition: all 0.15s;
+  }
+  .stage-chip:hover { border-color: var(--primary); color: var(--primary); }
+  .stage-chip.active { background: var(--primary); border-color: var(--primary); color: white; }
+
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 800px; }
+  thead { background: #FAFBFD; }
+  th {
+    padding: 10px 16px; text-align: left;
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  td { padding: 11px 16px; border-bottom: 1px solid var(--border); color: var(--text); vertical-align: middle; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover td { background: rgba(0,174,239,0.025); }
+  .cell-name { font-weight: 600; color: var(--navy); }
+  .cell-muted { color: var(--muted); font-size: 12px; }
+
+  /* ── BADGES ── */
+  .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .badge-green  { background: #D1FAE5; color: #065F46; }
+  .badge-blue   { background: #DBEAFE; color: #1E40AF; }
+  .badge-cyan   { background: #E0F5FE; color: #0369A1; }
+  .badge-orange { background: #FEF3C7; color: #92400E; }
+  .badge-purple { background: #F3E8FF; color: #6B21A8; }
+  .badge-gray   { background: #F3F4F6; color: #6B7280; }
+
+  .sla-tag { display: inline-block; padding: 2px 9px; border-radius: 6px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+  .sla-ok   { background: #D1FAE5; color: #065F46; }
+  .sla-warn { background: #FEF3C7; color: #92400E; }
+  .sla-late { background: #FEE2E2; color: #991B1B; }
+
+  /* ── LOADING / EMPTY ── */
+  .loading-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 60px; gap: 14px; color: var(--muted); }
+  .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
+  .empty-state { padding: 40px; text-align: center; color: var(--muted); font-size: 13px; }
+
+  .section-label {
+    font-size: 11px; font-weight: 700; color: var(--muted);
+    text-transform: uppercase; letter-spacing: 0.6px;
+    margin-bottom: 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  @media (max-width: 600px) {
+    .content { padding: 16px; }
+    .header { padding: 14px 16px; }
+    .pipeline-stages { flex-wrap: wrap; }
+    .p-stage { min-width: 50%; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <div class="logo">N</div>
+    <div>
+      <div class="header-title">Kit Decisor — Dashboard</div>
+      <div class="header-sub">Resumo - Envio Kit · Customer Experience</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div id="lastUpdated"></div>
+    <button class="refresh-btn" id="refreshBtn" onclick="loadData()">
+      <svg id="refreshIcon" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+        <path d="M1 4v6h6M23 20v-6h-6"/>
+        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/>
+      </svg>
+      Atualizar
+    </button>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section-label">Visão Geral</div>
+  <div class="kpi-grid" id="kpiGrid">
+    <div style="grid-column:1/-1">
+      <div class="loading-state"><div class="spinner"></div><span>Carregando dados da planilha...</span></div>
+    </div>
+  </div>
+
+  <div class="section-label">Funil do Pipeline</div>
+  <div class="pipeline-card">
+    <div class="pipeline-header">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2V12.46L22 3z"/></svg>
+      <span>Progresso por etapa</span>
+    </div>
+    <div class="pipeline-stages" id="pipelineStages">
+      <div style="padding:40px;width:100%;text-align:center;color:var(--muted)">—</div>
+    </div>
+  </div>
+
+  <div class="section-label">Registros</div>
+  <div class="table-card">
+    <div class="table-toolbar">
+      <div class="table-toolbar-left">
+        <span class="toolbar-title">Todos os Registros</span>
+        <span class="record-count" id="recordCount">—</span>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+        <div class="stage-filter" id="stageFilter"></div>
+        <input class="filter-input" id="filterInput" placeholder="🔍 Filtrar por nome, responsável..." oninput="applyFilters()">
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div id="tableContainer">
+        <div class="loading-state"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTM4pyeCZdDpc8cwbw5YsAwlIJ7vSKkNbsWfAXVh7-BVgbZvjcqdZLXDvq_IN9A1J-jqyrzX5fJo_o5/pub?gid=981637464&single=true&output=csv';
+const REFRESH_MS = 5 * 60 * 1000; // 5 minutos
+
+// ─── STATE ────────────────────────────────────────────────────────────────
+let allRows = [];
+let headers = [];
+let activeStageFilter = 'Todos';
+
+// ─── CSV PARSER ───────────────────────────────────────────────────────────
+function parseCSV(text) {
+  const result = [];
+  const lines = text.split(/\r?\n/);
+  for (const line of lines) {
+    if (!line.trim()) continue;
+    const row = [];
+    let inQuote = false, cell = '';
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i];
+      if (ch === '"') {
+        if (inQuote && line[i + 1] === '"') { cell += '"'; i++; }
+        else inQuote = !inQuote;
+      } else if (ch === ',' && !inQuote) {
+        row.push(cell.trim()); cell = '';
+      } else {
+        cell += ch;
+      }
+    }
+    row.push(cell.trim());
+    result.push(row);
+  }
+  return result;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────
+function get(row, name) {
+  const idx = headers.indexOf(name);
+  return idx >= 0 ? (row[idx] || '').trim() : '';
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  const t = d.trim();
+  if (!t) return '—';
+  const m1 = t.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
+  if (m1) return t.slice(0, 10);
+  const m2 = t.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (m2) return `${m2[3]}/${m2[2]}/${m2[1]}`;
+  return t;
+}
+
+function slaBadge(val) {
+  if (!val) return '<span class="sla-tag" style="background:#F3F4F6;color:#9CA3AF">—</span>';
+  const n = parseInt(val);
+  if (isNaN(n)) return `<span class="sla-tag" style="background:#F3F4F6;color:#9CA3AF">${val}</span>`;
+  if (n <= 2) return `<span class="sla-tag sla-ok">${n}d</span>`;
+  if (n <= 5) return `<span class="sla-tag sla-warn">${n}d</span>`;
+  return `<span class="sla-tag sla-late">${n}d</span>`;
+}
+
+function getStage(row) {
+  if (get(row, 'Data_Finalização_Entrevista')) return 'Entrevista Finalizada';
+  if (get(row, 'Flag_Apto_Entrevista'))         return 'Apto p/ Entrevista';
+  if (get(row, 'Data_Entrega_Kit'))              return 'Kit Entregue';
+  if (get(row, 'Data_Envio_Kit'))                return 'Kit Enviado';
+  if (get(row, 'Data_Resposta_Executivo'))        return 'Respondido';
+  if (get(row, 'Data_Disparo'))                  return 'Disparado';
+  return 'Pendente';
+}
+
+const stageCfg = {
+  'Entrevista Finalizada': { cls: 'badge-green',  color: '#10B981' },
+  'Apto p/ Entrevista':    { cls: 'badge-purple', color: '#7B2D8B' },
+  'Kit Entregue':          { cls: 'badge-blue',   color: '#1D4ED8' },
+  'Kit Enviado':           { cls: 'badge-cyan',   color: '#0369A1' },
+  'Respondido':            { cls: 'badge-orange', color: '#B45309' },
+  'Disparado':             { cls: 'badge-gray',   color: '#6B7280' },
+  'Pendente':              { cls: 'badge-gray',   color: '#9CA3AF' },
+};
+
+function stageBadge(stage) {
+  const cfg = stageCfg[stage] || stageCfg['Pendente'];
+  return `<span class="badge ${cfg.cls}">${stage}</span>`;
+}
+
+// ─── RENDER KPIs ──────────────────────────────────────────────────────────
+function renderKPIs(rows) {
+  const total       = rows.length;
+  const respondidos = rows.filter(r => get(r, 'Data_Resposta_Executivo')).length;
+  const enviados    = rows.filter(r => get(r, 'Data_Envio_Kit')).length;
+  const entregues   = rows.filter(r => get(r, 'Data_Entrega_Kit')).length;
+  const finalizados = rows.filter(r => get(r, 'Data_Finalização_Entrevista')).length;
+  const slaVals     = rows.map(r => parseInt(get(r, 'SLA_Executivo'))).filter(n => !isNaN(n) && n > 0);
+  const avgSLA      = slaVals.length ? (slaVals.reduce((a, b) => a + b, 0) / slaVals.length).toFixed(1) : '—';
+  const taxaResp    = total ? Math.round(respondidos / total * 100) : 0;
+
+  document.getElementById('kpiGrid').innerHTML = `
+    <div class="kpi-card kpi-blue">
+      <div class="kpi-icon">📦</div>
+      <div class="kpi-label">Total Pipeline</div>
+      <div class="kpi-value">${total}</div>
+      <div class="kpi-sub">registros ativos</div>
+    </div>
+    <div class="kpi-card kpi-orange">
+      <div class="kpi-icon">💬</div>
+      <div class="kpi-label">Respondidos</div>
+      <div class="kpi-value">${respondidos}</div>
+      <div class="kpi-sub">${taxaResp}% taxa de resposta</div>
+    </div>
+    <div class="kpi-card kpi-green">
+      <div class="kpi-icon">📬</div>
+      <div class="kpi-label">Kit Enviado</div>
+      <div class="kpi-value">${enviados}</div>
+      <div class="kpi-sub">${entregues} entregues</div>
+    </div>
+    <div class="kpi-card kpi-purple">
+      <div class="kpi-icon">🎯</div>
+      <div class="kpi-label">Entrevistas</div>
+      <div class="kpi-value">${finalizados}</div>
+      <div class="kpi-sub">finalizadas</div>
+    </div>
+    <div class="kpi-card kpi-navy">
+      <div class="kpi-icon">⏱️</div>
+      <div class="kpi-label">SLA Médio</div>
+      <div class="kpi-value" style="font-size:26px;letter-spacing:-0.5px">${avgSLA}${avgSLA !== '—' ? 'd' : ''}</div>
+      <div class="kpi-sub">resposta do executivo</div>
+    </div>
+  `;
+}
+
+// ─── RENDER PIPELINE ──────────────────────────────────────────────────────
+function renderPipeline(rows) {
+  const total = rows.length || 1;
+  const stages = [
+    { label: 'Disparados',  count: rows.filter(r => get(r, 'Data_Disparo')).length,                    color: '#00AEEF', icon: '📤', bg: '#E0F5FE' },
+    { label: 'Respondidos', count: rows.filter(r => get(r, 'Data_Resposta_Executivo')).length,          color: '#F59E0B', icon: '💬', bg: '#FEF3C7' },
+    { label: 'Kit Enviado', count: rows.filter(r => get(r, 'Data_Envio_Kit')).length,                  color: '#3B82F6', icon: '📦', bg: '#DBEAFE' },
+    { label: 'Kit Entregue',count: rows.filter(r => get(r, 'Data_Entrega_Kit')).length,                color: '#8B5CF6', icon: '✅', bg: '#F3E8FF' },
+    { label: 'Entrevistas', count: rows.filter(r => get(r, 'Data_Finalização_Entrevista')).length,     color: '#10B981', icon: '🎯', bg: '#D1FAE5' },
+  ];
+
+  document.getElementById('pipelineStages').innerHTML = stages.map(s => `
+    <div class="p-stage">
+      <div class="p-stage-icon" style="background:${s.bg}">${s.icon}</div>
+      <div class="p-stage-label">${s.label}</div>
+      <div class="p-stage-count">${s.count}</div>
+      <div class="p-stage-pct">${Math.round(s.count / total * 100)}%</div>
+      <div class="p-bar"><div class="p-bar-fill" style="width:${Math.round(s.count / total * 100)}%; background:${s.color}"></div></div>
+    </div>
+  `).join('');
+}
+
+// ─── STAGE FILTER CHIPS ───────────────────────────────────────────────────
+function renderStageChips(rows) {
+  const counts = {};
+  rows.forEach(r => { const s = getStage(r); counts[s] = (counts[s] || 0) + 1; });
+  const stages = ['Todos', ...Object.keys(stageCfg)];
+
+  document.getElementById('stageFilter').innerHTML = stages.map(s => {
+    const cnt = s === 'Todos' ? rows.length : (counts[s] || 0);
+    if (s !== 'Todos' && cnt === 0) return '';
+    return `<div class="stage-chip ${s === activeStageFilter ? 'active' : ''}" onclick="setStageFilter('${s}')">${s} <strong>${cnt}</strong></div>`;
+  }).join('');
+}
+
+function setStageFilter(s) {
+  activeStageFilter = s;
+  applyFilters();
+  renderStageChips(allRows.map(x => x.row));
+}
+
+// ─── FILTER + RENDER TABLE ────────────────────────────────────────────────
+function applyFilters() {
+  const q = (document.getElementById('filterInput').value || '').toLowerCase();
+  let filtered = allRows;
+  if (activeStageFilter !== 'Todos') filtered = filtered.filter(x => x.stage === activeStageFilter);
+  if (q) filtered = filtered.filter(x => x.row.some(cell => cell.toLowerCase().includes(q)));
+
+  document.getElementById('recordCount').textContent = `${filtered.length} registro${filtered.length !== 1 ? 's' : ''}`;
+  renderTable(filtered);
+}
+
+function renderTable(data) {
+  if (data.length === 0) {
+    document.getElementById('tableContainer').innerHTML = '<div class="empty-state">Nenhum registro encontrado para os filtros aplicados.</div>';
+    return;
+  }
+
+  const cols = [
+    { key: 'Nome Negócio',                label: 'Negócio' },
+    { key: 'Proprietário',                label: 'Executivo' },
+    { key: 'Plataforma',                  label: 'Plataforma' },
+    { key: 'Data_Disparo',                label: 'Data Disparo', date: true },
+    { key: 'SLA_Executivo',               label: 'SLA', sla: true },
+    { key: 'Data_Envio_Kit',              label: 'Kit Enviado', date: true },
+    { key: 'Data_Finalização_Entrevista', label: 'Entrevista', date: true },
+    { key: 'Quem enviou',                 label: 'Responsável' },
+  ];
+
+  const ths = cols.map(c => `<th>${c.label}</th>`).join('') + '<th>Status</th>';
+
+  const trs = data.map(({ row, stage }) => {
+    const tds = cols.map((c, i) => {
+      let val = get(row, c.key);
+      if (c.date) return `<td class="cell-muted">${fmtDate(val)}</td>`;
+      if (c.sla)  return `<td>${slaBadge(val)}</td>`;
+      val = val.replace(/^\[NE\]\s*-?\s*/i, '').trim();
+      val = val.replace(/@nuvemshop\.com\.br$/, '');
+      if (i === 0) return `<td class="cell-name">${val || '—'}</td>`;
+      return `<td>${val || '—'}</td>`;
+    }).join('');
+    return `<tr>${tds}<td>${stageBadge(stage)}</td></tr>`;
+  }).join('');
+
+  document.getElementById('tableContainer').innerHTML = `
+    <table>
+      <thead><tr>${ths}</tr></thead>
+      <tbody>${trs}</tbody>
+    </table>
+  `;
+}
+
+// ─── LOAD DATA ────────────────────────────────────────────────────────────
+async function loadData() {
+  const btn  = document.getElementById('refreshBtn');
+  const icon = document.getElementById('refreshIcon');
+  icon.classList.add('spinning');
+  document.getElementById('lastUpdated').textContent = 'Atualizando...';
+
+  try {
+    const response = await fetch(CSV_URL);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const csvText = await response.text();
+
+    const parsed = parseCSV(csvText);
+    if (!parsed || parsed.length < 2) {
+      document.getElementById('kpiGrid').innerHTML =
+        '<div style="grid-column:1/-1;padding:20px;color:var(--muted)">Nenhum dado encontrado na planilha.</div>';
+      return;
+    }
+
+    headers = parsed[0];
+    const dataRows = parsed.slice(1).filter(r => r.some(c => c.trim() !== ''));
+    allRows = dataRows.map(row => ({ row, stage: getStage(row) }));
+
+    renderKPIs(dataRows);
+    renderPipeline(dataRows);
+    renderStageChips(dataRows);
+    applyFilters();
+
+    const now = new Date();
+    document.getElementById('lastUpdated').textContent =
+      `Atualizado às ${now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById('lastUpdated').textContent = 'Erro na atualização';
+    document.getElementById('kpiGrid').innerHTML =
+      `<div style="grid-column:1/-1;padding:20px;color:var(--danger)">
+        Erro ao carregar dados: ${err.message}<br>
+        <small style="color:var(--muted);margin-top:4px;display:block">
+          Verifique se a planilha está publicada e o link está correto.
+        </small>
+      </div>`;
+  } finally {
+    icon.classList.remove('spinning');
+  }
+}
+
+// Init + auto-refresh a cada 5 minutos
+loadData();
+setInterval(loadData, REFRESH_MS);
+</script>
+</body>
+</html>
