@@ -364,12 +364,7 @@ const svgIcon = {
 // ── RENDER KPIs ─────────────────────────────────────────────────────────────
 function renderMetrics(rows) {
   // Total Pipeline: count onde "Qual o ticket?" não está vazio
-//const withTicket   = rows.filter(r => get(r, 'Qual o ticket?') !== '');
-function renderMetrics(rows) {
-  // Total Pipeline: count onde Nome Negócio não está vazio
-  const withTicket    = rows.filter(r => get(r, 'Nome Negócio') !== '');
-  const totalPipeline = withTicket.length;
- //const withTicket    = rows;
+  const withTicket   = rows.filter(r => get(r, 'Qual o ticket?') !== '');
   const totalPipeline = withTicket.length;
 
   // SLA Executivo (sobre todos os registros com SLA preenchido)
@@ -637,7 +632,7 @@ async function loadData() {
     const parsed = parseCSV(csv);
     if (!parsed || parsed.length < 2) throw new Error('Planilha vazia ou sem dados');
     headers = parsed[0];
-    allRows = parsed.slice(1).filter(r=>r.some(c=>c.trim()!==''));
+    allRows = parsed.slice(1).filter(r => (r[0]||'').trim() !== '');
     renderMetrics(allRows);
     renderFunnel(allRows);
     renderAlerts(allRows);
