@@ -28,7 +28,6 @@
       --grn-bg: #1a2e10; --grn-bd: #3a6020;
     }
   }
-
   body { background: var(--bg3); color: var(--txt); min-height: 100vh; }
   .page { max-width: 960px; margin: 0 auto; padding: 24px 16px 48px; }
 
@@ -41,37 +40,87 @@
     font-size: 12px; font-weight: 500; padding: 7px 14px;
     background: var(--bg); border: 0.5px solid var(--border);
     border-radius: var(--radius); cursor: pointer; color: var(--txt2);
-    white-space: nowrap; transition: color .15s;
-    font-family: inherit;
+    white-space: nowrap; transition: color .15s; font-family: inherit;
   }
   .refresh-btn:hover { color: var(--txt); }
   @keyframes spin { to { transform: rotate(360deg); } }
   .spinning { animation: spin 0.7s linear infinite; }
 
   /* ── STATUS BAR ── */
-  .status-bar {
-    font-size: 11px; color: var(--txt3);
-    margin-bottom: 18px; display: flex; align-items: center; gap: 8px;
-  }
+  .status-bar { font-size: 11px; color: var(--txt3); margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
   .status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--grn-mid); flex-shrink: 0; }
   .status-dot.error { background: var(--red-mid); }
   .status-dot.loading { background: #F59E0B; animation: blink 1s ease infinite; }
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-  /* ── METRICS ── */
-  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px,1fr)); gap: 10px; margin-bottom: 24px; }
-  .mc { background: var(--bg); border-radius: var(--radius-lg); border: 0.5px solid var(--border); padding: 14px 16px; }
-  .mc .lbl { font-size: 12px; color: var(--txt2); margin-bottom: 4px; }
-  .mc .val { font-size: 28px; font-weight: 500; line-height: 1.1; }
-  .mc .sub { font-size: 11px; color: var(--txt3); margin-top: 3px; }
+  /* ── KPI GRID ── */
+  .metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  @media (max-width: 640px) { .metrics { grid-template-columns: repeat(2, 1fr); } }
+
+  /* ── KPI CARD redesenhado ── */
+  .mc {
+    background: var(--bg);
+    border-radius: var(--radius-lg);
+    border: 0.5px solid var(--border);
+    padding: 18px 20px 16px;
+    position: relative;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .15s;
+    cursor: default;
+  }
+  .mc:hover { box-shadow: 0 6px 20px rgba(0,0,0,0.08); transform: translateY(-1px); }
+  .mc::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    background: var(--mc-accent, var(--pur));
+  }
+  .mc-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .mc-lbl {
+    font-size: 11px; font-weight: 600; color: var(--txt3);
+    text-transform: uppercase; letter-spacing: .06em;
+  }
+  .mc-icon {
+    width: 30px; height: 30px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    background: color-mix(in srgb, var(--mc-accent, var(--pur)) 12%, transparent);
+  }
+  .mc-val {
+    font-size: 32px; font-weight: 600; line-height: 1;
+    color: var(--mc-color, var(--txt));
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+  .mc-sub {
+    font-size: 11px; color: var(--txt3);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .mc-bar {
+    margin-top: 12px; height: 3px; border-radius: 2px;
+    background: color-mix(in srgb, var(--mc-accent, var(--pur)) 15%, transparent);
+    overflow: hidden;
+  }
+  .mc-bar-fill {
+    height: 100%; border-radius: 2px;
+    background: var(--mc-accent, var(--pur));
+    transition: width .8s ease;
+  }
 
   /* ── PIPELINE FUNNEL ── */
   .funnel-card {
-    background: var(--bg);
-    border: 0.5px solid var(--border);
-    border-radius: var(--radius-lg);
-    padding: 16px 20px;
-    margin-bottom: 16px;
+    background: var(--bg); border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg); padding: 16px 20px; margin-bottom: 16px;
   }
   .funnel-title { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: .08em; color: var(--txt3); margin-bottom: 14px; }
   .funnel-stages { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px,1fr)); gap: 12px; }
@@ -143,7 +192,6 @@
   .loading-state { display: flex; align-items: center; justify-content: center; gap: 10px; padding: 48px; color: var(--txt3); font-size: 13px; }
   .spinner { width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--pur); border-radius: 50%; animation: spin .7s linear infinite; flex-shrink: 0; }
   .error-state { padding: 24px; font-size: 13px; color: var(--red-mid); background: var(--red-bg); border-radius: var(--radius); border: 0.5px solid var(--red-bd); }
-
   .footer { text-align: center; font-size: 12px; color: var(--txt3); margin-top: 32px; }
 </style>
 </head>
@@ -170,7 +218,7 @@
     <span id="statusTxt">Carregando dados da planilha...</span>
   </div>
 
-  <!-- MÉTRICAS -->
+  <!-- KPIs -->
   <div class="metrics" id="metrics">
     <div class="mc" style="grid-column:1/-1"><div class="loading-state"><div class="spinner"></div>Buscando dados...</div></div>
   </div>
@@ -278,11 +326,10 @@ function get(row, name) {
   const idx = headers.indexOf(name);
   return idx >= 0 ? (row[idx] || '').trim() : '';
 }
-
-function getSLA(row)  { return parseInt(get(row, 'SLA_Executivo')); }
-function getProp(row) { return get(row, 'Proprietário').replace(/@nuvemshop\.com\.br$/, ''); }
-function getNome(row) { return get(row, 'Nome Negócio').replace(/^\[NE\]\s*-?\s*/i,'').trim(); }
-
+function getSLA(row)      { return parseInt(get(row, 'SLA_Executivo')); }
+function getSLAEnvio(row) { return parseInt(get(row, 'SLA_Envio_Kit')); }
+function getProp(row)     { return get(row, 'Proprietário').replace(/@nuvemshop\.com\.br$/, ''); }
+function getNome(row)     { return get(row, 'Nome Negócio').replace(/^\[NE\]\s*-?\s*/i,'').trim(); }
 function fmtDate(d) {
   if (!d || !d.trim()) return '—';
   const m1 = d.match(/^(\d{2})\/(\d{2})\/(\d{4})/);
@@ -291,7 +338,6 @@ function fmtDate(d) {
   if (m2) return `${m2[3]}/${m2[2]}/${m2[1]}`;
   return d.trim();
 }
-
 function slaTp(row) {
   const n = getSLA(row);
   if (isNaN(n) || n <= 0) return 'pe';
@@ -299,14 +345,12 @@ function slaTp(row) {
   if (n <= 5)       return 'wa';
   return 'cr';
 }
-
 function pillTxt(row) {
   const t = slaTp(row); const n = getSLA(row);
   if (t==='pe') return 'Sem data';
   if (t==='ok') return n+'d — ok';
   return n+'d — vencido';
 }
-
 function statusTxt(t) { return {cr:'Vencido',wa:'Vencido',ok:'No prazo',pe:'Sem data'}[t]; }
 function bclass(t)    { return {cr:'bcr',wa:'bwa',ok:'bok',pe:'bpe'}[t]; }
 
@@ -317,38 +361,111 @@ const svgIcon = {
   pe:`<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#9c9c97" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>`,
 };
 
-// ── RENDER METRICS ──────────────────────────────────────────────────────────
+// ── RENDER KPIs ─────────────────────────────────────────────────────────────
 function renderMetrics(rows) {
-  const comSLA = rows.filter(r => !isNaN(getSLA(r)) && getSLA(r)>0);
+  // Total Pipeline: count onde "Qual o ticket?" não está vazio
+  const withTicket   = rows.filter(r => get(r, 'Qual o ticket?') !== '');
+  const totalPipeline = withTicket.length;
+
+  // SLA Executivo (sobre todos os registros com SLA preenchido)
+  const comSLA = rows.filter(r => !isNaN(getSLA(r)) && getSLA(r) > 0);
   const venc   = comSLA.filter(r => getSLA(r) > SLA_LIM);
   const nok    = comSLA.filter(r => getSLA(r) <= SLA_LIM);
-  const semSLA = rows.filter(r => isNaN(getSLA(r)) || getSLA(r)<=0);
-  const kitEnv = rows.filter(r => get(r,'Data_Envio_Kit')).length;
-  const mx     = comSLA.length ? comSLA.reduce((a,b)=>getSLA(b)>getSLA(a)?b:a, comSLA[0]) : null;
 
-  const items = [
-    { lbl:'Total pipeline',  val:rows.length,  sub:'registros ativos',                             color:'' },
-    { lbl:'SLA vencido',     val:venc.length,  sub: comSLA.length ? Math.round(venc.length/comSLA.length*100)+'% dos com SLA' : '—', color:'#A32D2D' },
-    { lbl:'No prazo (≤2d)',  val:nok.length,   sub: comSLA.length ? Math.round(nok.length/comSLA.length*100)+'% dos com SLA'  : '—', color:'#3B6D11' },
-    { lbl:'Sem SLA',         val:semSLA.length,sub:'sem data de disparo',                           color:'' },
-    { lbl:'Kits enviados',   val:kitEnv,       sub:'de '+rows.length+' total',                      color:'' },
-    { lbl:'Maior SLA',       val:mx ? getSLA(mx)+'d' : '—', sub: mx ? getNome(mx).slice(0,16) : '—', color:'#A32D2D' },
+  // Kits: count por colunas de data
+  const kitEnv = rows.filter(r => get(r, 'Data_Envio_Kit') !== '').length;
+  const kitEnt = rows.filter(r => get(r, 'Data_Entrega_Kit') !== '').length;
+
+  // SLA Envio médio
+  const slaEnvioVals = rows
+    .map(r => getSLAEnvio(r))
+    .filter(n => !isNaN(n) && n > 0);
+  const avgSlaEnvio = slaEnvioVals.length
+    ? (slaEnvioVals.reduce((a, b) => a + b, 0) / slaEnvioVals.length).toFixed(1)
+    : null;
+
+  // Maior SLA Executivo
+  const mx = comSLA.length
+    ? comSLA.reduce((a, b) => getSLA(b) > getSLA(a) ? b : a, comSLA[0])
+    : null;
+
+  const kpis = [
+    {
+      lbl:    'Total Pipeline',
+      val:    totalPipeline,
+      sub:    `${rows.length} linhas importadas`,
+      icon:   '📋',
+      accent: '#534AB7',
+      bar:    null,
+    },
+    {
+      lbl:    'SLA Vencido',
+      val:    venc.length,
+      sub:    comSLA.length ? `${Math.round(venc.length / comSLA.length * 100)}% dos com SLA` : '—',
+      icon:   '⚠️',
+      accent: '#A32D2D',
+      color:  venc.length > 0 ? '#A32D2D' : 'var(--txt)',
+      bar:    comSLA.length ? venc.length / comSLA.length * 100 : 0,
+    },
+    {
+      lbl:    'No Prazo (≤2d)',
+      val:    nok.length,
+      sub:    comSLA.length ? `${Math.round(nok.length / comSLA.length * 100)}% dos com SLA` : '—',
+      icon:   '✅',
+      accent: '#3B6D11',
+      color:  '#3B6D11',
+      bar:    comSLA.length ? nok.length / comSLA.length * 100 : 0,
+    },
+    {
+      lbl:    'Kits Enviados',
+      val:    kitEnv,
+      sub:    `de ${totalPipeline} no pipeline`,
+      icon:   '📦',
+      accent: '#BA7517',
+      bar:    totalPipeline ? kitEnv / totalPipeline * 100 : 0,
+    },
+    {
+      lbl:    'Kits Entregues',
+      val:    kitEnt,
+      sub:    kitEnv ? `${Math.round(kitEnt / kitEnv * 100)}% dos enviados` : '—',
+      icon:   '🏠',
+      accent: '#0369A1',
+      bar:    kitEnv ? kitEnt / kitEnv * 100 : 0,
+    },
+    {
+      lbl:    'SLA Médio Envio',
+      val:    avgSlaEnvio !== null ? avgSlaEnvio + 'd' : '—',
+      sub:    avgSlaEnvio !== null ? `sobre ${slaEnvioVals.length} registros` : 'sem dados de envio',
+      icon:   '⏱️',
+      accent: '#7B2D8B',
+      bar:    null,
+    },
   ];
 
-  document.getElementById('metrics').innerHTML = items.map(m=>
-    `<div class="mc"><div class="lbl">${m.lbl}</div><div class="val" style="color:${m.color||'var(--txt)'};">${m.val}</div><div class="sub">${m.sub}</div></div>`
-  ).join('');
+  document.getElementById('metrics').innerHTML = kpis.map(k => `
+    <div class="mc" style="--mc-accent:${k.accent};${k.color ? `--mc-color:${k.color};` : ''}">
+      <div class="mc-top">
+        <div class="mc-lbl">${k.lbl}</div>
+        <div class="mc-icon">${k.icon}</div>
+      </div>
+      <div class="mc-val">${k.val}</div>
+      <div class="mc-sub">${k.sub}</div>
+      ${k.bar !== null
+        ? `<div class="mc-bar"><div class="mc-bar-fill" style="width:${Math.min(k.bar,100).toFixed(1)}%"></div></div>`
+        : ''}
+    </div>
+  `).join('');
 }
 
 // ── RENDER FUNNEL ───────────────────────────────────────────────────────────
 function renderFunnel(rows) {
-  const total = rows.length || 1;
+  const total = rows.filter(r => get(r, 'Qual o ticket?') !== '').length || 1;
   const stages = [
-    { lbl:'Disparados',  n:rows.filter(r=>get(r,'Data_Disparo')).length,                icon:'📤', color:'#534AB7' },
-    { lbl:'Respondidos', n:rows.filter(r=>get(r,'Data_Resposta_Executivo')).length,     icon:'💬', color:'#1D9E75' },
-    { lbl:'Kit Enviado', n:rows.filter(r=>get(r,'Data_Envio_Kit')).length,              icon:'📦', color:'#BA7517' },
-    { lbl:'Kit Entregue',n:rows.filter(r=>get(r,'Data_Entrega_Kit')).length,            icon:'✅', color:'#0369A1' },
-    { lbl:'Entrevistas', n:rows.filter(r=>get(r,'Data_Finalização_Entrevista')||get(r,'Flag_Apto_Entrevista')).length, icon:'🎯', color:'#7B2D8B' },
+    { lbl:'Disparados',  n:rows.filter(r=>get(r,'Data_Disparo')).length,                                                              icon:'📤', color:'#534AB7' },
+    { lbl:'Kit Enviado', n:rows.filter(r=>get(r,'Data_Envio_Kit') !== '').length,                                                     icon:'📦', color:'#BA7517' },
+    { lbl:'Kit Entregue',n:rows.filter(r=>get(r,'Data_Entrega_Kit') !== '').length,                                                   icon:'🏠', color:'#0369A1' },
+    { lbl:'Apto Entrev.',n:rows.filter(r=>get(r,'Flag_Apto_Entrevista') !== '').length,                                               icon:'🎯', color:'#1D9E75' },
+    { lbl:'Entrevistas', n:rows.filter(r=>get(r,'Data_Finalização_Entrevista') !== '').length,                                        icon:'✅', color:'#7B2D8B' },
   ];
   document.getElementById('funnelStages').innerHTML = stages.map(s=>`
     <div class="f-stage">
@@ -371,7 +488,7 @@ function renderAlerts(rows) {
   sorted.forEach(row => {
     const t = slaTp(row);
     if (t !== last) { last=t; al.innerHTML+=`<div class="dl">${grpLbl[t]}</div>`; }
-    const sub = get(row,'Data_Disparo') ? 'disparo: '+fmtDate(get(row,'Data_Disparo')) : 'sem data de disparo';
+    const sub  = get(row,'Data_Disparo') ? 'disparo: '+fmtDate(get(row,'Data_Disparo')) : 'sem data de disparo';
     const prop = getProp(row) || '—';
     al.innerHTML+=`<div class="ab ${t}">${svgIcon[t]}<div style="flex:1;min-width:0;"><div class="nome">${getNome(row)||get(row,'Nome Negócio')}</div><div class="sub">${prop}@nuvemshop.com.br · ${sub}</div></div><span class="pill ${t}">${pillTxt(row)}</span></div>`;
   });
@@ -382,17 +499,18 @@ function renderTable() {
   const q = (document.getElementById('filterInput')?.value||'').toLowerCase();
   const filtered = allRows.filter(row => {
     if (!q) return true;
-    return [getNome(row), getProp(row), get(row,'Plataforma'), get(row,'UF')].some(v=>v.toLowerCase().includes(q));
+    return [getNome(row), getProp(row), get(row,'Plataforma'), get(row,'UF Decisor')].some(v=>v.toLowerCase().includes(q));
   }).sort((a,b)=>(getSLA(b)||0)-(getSLA(a)||0));
 
   const cols = [
-    { lbl:'Negócio',     w:'30%' },
-    { lbl:'Proprietário',w:'18%' },
-    { lbl:'Plataforma',  w:'11%' },
-    { lbl:'Disparo',     w:'10%' },
-    { lbl:'SLA',         w:'8%'  },
-    { lbl:'Kit enviado', w:'11%' },
-    { lbl:'Status',      w:'12%' },
+    { lbl:'Negócio',      w:'28%' },
+    { lbl:'Proprietário', w:'18%' },
+    { lbl:'Plataforma',   w:'12%' },
+    { lbl:'Disparo',      w:'10%' },
+    { lbl:'SLA Exec.',    w:'9%'  },
+    { lbl:'Kit enviado',  w:'10%' },
+    { lbl:'Kit entregue', w:'10%' },
+    { lbl:'Status',       w:'13%' },
   ];
 
   if (!filtered.length) {
@@ -410,6 +528,7 @@ function renderTable() {
       <td style="color:var(--txt2);">${fmtDate(get(row,'Data_Disparo'))}</td>
       <td><span class="bdg ${bclass(t)}">${!isNaN(getSLA(row))&&getSLA(row)>0 ? getSLA(row)+'d' : '—'}</span></td>
       <td style="color:var(--txt2);">${fmtDate(get(row,'Data_Envio_Kit'))}</td>
+      <td style="color:var(--txt2);">${fmtDate(get(row,'Data_Entrega_Kit'))}</td>
       <td><span class="bdg ${bclass(t)}">${statusTxt(t)}</span></td>
     </tr>`;
   }).join('');
@@ -429,8 +548,6 @@ function renderExec(rows) {
     else em[k].venc++;
     const n=getSLA(row); if(!isNaN(n)&&n>0)em[k].slas.push(n);
   });
-
-  // chart
   const ks=Object.keys(em);
   const avgs=ks.map(k=>{const s=em[k].slas;return s.length?Math.round(s.reduce((a,b)=>a+b,0)/s.length*10)/10:null;});
   const bgs=avgs.map(v=>v===null?'#B4B2A9':v<=SLA_LIM?'#97C459':v<=5?'#EF9F27':'#E24B4A');
@@ -443,8 +560,6 @@ function renderExec(rows) {
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>ctx.dataset.label==='Limite 2d'?'Limite: 2d':` ${ctx.parsed.y!==null?ctx.parsed.y+'d':'sem SLA'}`}}},scales:{x:{ticks:{font:{size:11},autoSkip:false,maxRotation:30}},y:{beginAtZero:true,suggestedMax:11,ticks:{stepSize:1,callback:v=>v+'d'}}}}
   });
-
-  // list
   const el = document.getElementById('exec-list'); el.innerHTML='';
   Object.entries(em).sort((a,b)=>{
     const aa=a[1].slas.length?a[1].slas.reduce((x,y)=>x+y,0)/a[1].slas.length:-1;
@@ -470,9 +585,8 @@ function renderExec(rows) {
 
 // ── RENDER DISTRIBUIÇÃO ─────────────────────────────────────────────────────
 function renderDist(rows) {
-  // UF
   const ufC={};
-  rows.forEach(r=>{const u=get(r,'UF');if(u)ufC[u]=(ufC[u]||0)+1;});
+  rows.forEach(r=>{const u=get(r,'UF Decisor');if(u)ufC[u]=(ufC[u]||0)+1;});
   const ufL=Object.keys(ufC).sort((a,b)=>ufC[b]-ufC[a]);
   if(charts.uf) charts.uf.destroy();
   charts.uf=new Chart(document.getElementById('chartUF'),{
@@ -480,13 +594,10 @@ function renderDist(rows) {
     data:{labels:ufL,datasets:[{label:'Negócios',data:ufL.map(k=>ufC[k]),backgroundColor:['#534AB7','#7F77DD','#AFA9EC'],borderRadius:4,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{font:{size:14}}},y:{beginAtZero:true,ticks:{stepSize:1}}}}
   });
-
-  // Decisor
   const decC={};
   rows.forEach(r=>{
-    ['Tipo de Decisoe 1','Tipo de Decisoe 2'].forEach(col=>{
-      const v=get(r,col);if(v&&v!=='—')decC[v]=(decC[v]||0)+1;
-    });
+    const v=get(r,'Qual tipo de decisor?'); if(v)decC[v]=(decC[v]||0)+1;
+    const v2=get(r,'Qual tipo de decisor 2?'); if(v2)decC[v2]=(decC[v2]||0)+1;
   });
   const decL=Object.keys(decC);
   if(charts.dec) charts.dec.destroy();
@@ -495,8 +606,6 @@ function renderDist(rows) {
     data:{labels:decL,datasets:[{data:decL.map(k=>decC[k]),backgroundColor:['#534AB7','#1D9E75','#BA7517'],borderWidth:0}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'55%',plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:10,padding:8}}}}
   });
-
-  // Plataformas
   const platC={};
   rows.forEach(r=>{const p=get(r,'Plataforma');if(p&&p!=='—')platC[p]=(platC[p]||0)+1;});
   const platL=Object.keys(platC).sort((a,b)=>platC[b]-platC[a]);
@@ -516,30 +625,24 @@ async function loadData() {
   icon.classList.add('spinning');
   dot.className='status-dot loading';
   txt.textContent='Atualizando dados da planilha...';
-
   try {
     const res = await fetch(CSV_URL + '&t=' + Date.now());
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const csv = await res.text();
     const parsed = parseCSV(csv);
     if (!parsed || parsed.length < 2) throw new Error('Planilha vazia ou sem dados');
-
     headers = parsed[0];
     allRows = parsed.slice(1).filter(r=>r.some(c=>c.trim()!==''));
-
     renderMetrics(allRows);
     renderFunnel(allRows);
     renderAlerts(allRows);
     renderTable();
     renderExec(allRows);
     renderDist(allRows);
-
     const now = new Date();
     dot.className='status-dot';
-    const headerSub = document.getElementById('headerSub');
-    headerSub.textContent = `Resumo · Envio Kits · ${allRows.length} registros · atualizado às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
-    txt.textContent = `Dados carregados com sucesso · próxima atualização automática em 5 min`;
-
+    document.getElementById('headerSub').textContent = `Resumo · Envio Kits · ${allRows.filter(r=>get(r,'Qual o ticket?')!=='').length} registros · atualizado às ${now.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`;
+    txt.textContent = `Dados carregados com sucesso · próxima atualização em 5 min`;
   } catch(err) {
     console.error(err);
     dot.className='status-dot error';
