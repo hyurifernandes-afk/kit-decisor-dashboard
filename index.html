@@ -363,9 +363,8 @@ const svgIcon = {
 
 // ── RENDER KPIs ─────────────────────────────────────────────────────────────
 function renderMetrics(rows) {
-  // Total Pipeline: count onde "Qual o ticket?" não está vazio
-  const withTicket   = rows.filter(r => get(r, 'Qual o ticket?') !== '');
-  const totalPipeline = withTicket.length;
+  // Total Pipeline: todos os negócios importados (com Nome Negócio preenchido)
+  const totalPipeline = rows.length;
 
   // SLA Executivo (sobre todos os registros com SLA preenchido)
   const comSLA = rows.filter(r => !isNaN(getSLA(r)) && getSLA(r) > 0);
