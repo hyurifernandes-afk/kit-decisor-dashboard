@@ -304,20 +304,29 @@ let allRows = [];
 let charts  = {};
 
 // ── CSV PARSER ──────────────────────────────────────────────────────────────
+// Parser robusto: respeita quebras de linha dentro de campos entre aspas
 function parseCSV(text) {
   const result = [];
-  for (const line of text.split(/\r?\n/)) {
-    if (!line.trim()) continue;
-    const row = []; let inQ = false, cell = '';
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') { if (inQ && line[i+1]==='"'){cell+='"';i++;}else inQ=!inQ; }
-      else if (ch === ',' && !inQ) { row.push(cell.trim()); cell=''; }
-      else cell += ch;
+  let row = [], cell = '', inQ = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (ch === '"') {
+      if (inQ && text[i+1] === '"') { cell += '"'; i++; } // aspas escapadas ""
+      else inQ = !inQ;
+    } else if (ch === ',' && !inQ) {
+      row.push(cell.trim()); cell = '';
+    } else if ((ch === '\n' || (ch === '\r' && text[i+1] === '\n')) && !inQ) {
+      if (ch === '\r') i++; // pula o \n do \r\n
+      row.push(cell.trim()); cell = '';
+      if (row.some(c => c !== '')) result.push(row);
+      row = [];
+    } else {
+      cell += ch;
     }
-    row.push(cell.trim());
-    result.push(row);
   }
+  // última célula/linha
+  row.push(cell.trim());
+  if (row.some(c => c !== '')) result.push(row);
   return result;
 }
 
